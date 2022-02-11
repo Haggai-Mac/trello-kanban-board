@@ -71,7 +71,6 @@ class ColumnController extends Controller
         }
 
         $column->title = $request->title;
-        $column->position = $request->position;
         $column->save();
 
         return response()->json([
