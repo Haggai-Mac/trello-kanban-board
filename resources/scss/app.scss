@@ -1,3 +1,63 @@
 // Normalize CSS
 @import '~normalize.css/normalize.css';
 
+html {
+    position: relative;
+    height: 100%;
+    font-family: sans-serif;
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+body {
+    background-color: #fff;
+    color: #636b6f;
+    font-family: 'Nunito', sans-serif;
+    height: 100%;
+    margin: 0;
+    position: relative;
+
+    p {
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+}
+
+.footer {
+    background-color: #343a40;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
+    &__container{
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+
+        @media (min-width: 576px) {
+            max-width: 540px;
+        }
+
+        @media (min-width: 768px) {
+            max-width: 720px;
+        }
+
+        @media (min-width: 992px) {
+            max-width: 960px;
+        }
+
+        @media (min-width: 1200px) {
+            max-width: 1140px;
+        }
+    }
+
+    &__copyright {
+        color: white;
+        margin-bottom: 0;
+        text-align: center;
+        padding: 15px;
+    }
+}
