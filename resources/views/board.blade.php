@@ -19,7 +19,7 @@
         <a class="export-db" target="_blank" href="{{ route('board.export.db'); }}">Export DB</a>
     </main>
     <footer class="footer">
-        <div class="footer__container">
+        <div class="container">
             <p class="footer__copyright">© Copyright {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
         </div>
     </footer>

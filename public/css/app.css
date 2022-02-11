@@ -370,14 +370,7 @@ body p {
   margin-top: 0;
   margin-bottom: 1rem;
 }
-
-.footer {
-  background-color: #343a40;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
-.footer__container {
+body .container {
   width: 100%;
   padding-right: 15px;
   padding-left: 15px;

@@ -24,13 +24,7 @@ body {
     }
 }
 
-.footer {
-    background-color: #343a40;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-
-    &__container{
+    .container {
         width: 100%;
         padding-right: 15px;
         padding-left: 15px;
