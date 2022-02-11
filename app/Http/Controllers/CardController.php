@@ -56,7 +56,7 @@ class CardController extends Controller
             'title'=>'required|string',
             'column_id'=>'required|integer',
             'description'=>'nullable|string',
-            'position'=>'nullable|integer',
+            'order'=>'nullable|integer',
         ]);
 
         if ($validator->fails()) { 
@@ -93,7 +93,7 @@ class CardController extends Controller
             'title'=>'required|string',
             'column_id'=>'required|integer',
             'description'=>'nullable|string',
-            'position'=>'nullable|integer',
+            'order'=>'nullable|integer',
         ]);
 
         if ($validator->fails()) { 
@@ -105,7 +105,7 @@ class CardController extends Controller
         $card->title = $request->title;
         $card->description = $request->description;
         $card->column_id = $request->column_id;
-        $card->position = $request->position;
+        $card->order = $request->order;
         $card->save();
 
         return response()->json([
