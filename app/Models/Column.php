@@ -19,11 +19,41 @@ class Column extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'update_path',
+        'delete_path',
+    ];
+
+    /**
      * Get the cards for the column.
      */
     public function cards()
     {
         return $this->hasMany(Card::class);
+    }
+
+    /**
+     * Generates the url path for updating the column
+     *
+     * @return {string}
+     */
+    public function getUpdatePathAttribute()
+    {
+        return route('api.columns.update', [$this->id]);
+    }
+
+    /**
+     * Generates the url path for deleteing the column
+     *
+     * @return {string}
+     */
+    public function getDeletePathAttribute()
+    {
+        return route('api.columns.destroy', [$this->id]);
     }
 
     /**
