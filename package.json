@@ -21,6 +21,7 @@
     "dependencies": {
         "normalize.css": "^8.0.1",
         "vue": "^3.2.30",
-        "vue-final-modal": "^3.4.3"
+        "vue-final-modal": "^3.4.3",
+        "vuedraggable": "^4.1.0"
     }
 }

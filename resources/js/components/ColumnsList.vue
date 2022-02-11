@@ -6,45 +6,49 @@
         <template v-if="messages.length > 0">
             <div v-for="(message, idx) in messages" :key="idx" class="alert alert-success">{{ message }}</div>
         </template>
-        <div v-for="column in currentList" :key="column.id" class="column">
+        <div v-for="(column, index) in currentList" :key="column.id" class="column">
             <div class="column-wrapper">
                 <div class="column-header">
-                    <div @click="editColumn(column)" :class="['column-header-target', (editAction ? 'is-hidden' : '')]"></div>
-                    <textarea v-model="column.title" :ref="'title-' + column.id" @blur="updateColumn(column)" @change="changeColumn(column)"></textarea>
+                    <div @click="editColumn(column, index)" :class="['column-header-target', (editAction ? 'is-hidden' : '')]"></div>
+                    <textarea v-model="column.title" ref="title" @blur="updateColumn(column)" @change="changeColumn(column)"></textarea>
                     <a class="delete-column" @click="deleteColumn(column)">X</a>
                 </div>
                 <div class="column-cards">
-                    <div v-for="card in column.cards" :key="card.id" class="column-card" @click="openCardModal(card)">
-                        <span>{{ card.title }}</span>
-                        <vue-final-modal v-model="card.show_modal" :name="'cardModal-' + card.id" classes="modal-container" content-class="modal-content" @click-outside="closeModal(card)" @closed="closeModal(card)" @cancel="closeModal(card)">
-                            <span class="modal__title">{{ card.title }}</span>
-                            <div class="modal__content">
-                                <form @submit.prevent="updateCard(card)">
-                                    <div class="form-group">
-                                        <label>Title</label>
-                                        <input type="text" v-model="card.title" required>
+                    <draggable v-model="column.cards" class="list-group" group="cards" @change="updateOrder" item-key="id">
+                        <template #item="{element}">
+                            <div class="column-card" @click="openCardModal(element)">
+                                <span>{{ element.title }}</span>
+                                <vue-final-modal v-model="element.show_modal" :name="'cardModal-' + element.id" classes="modal-container" content-class="modal-content" @click-outside="closeModal(element)" @closed="closeModal(element)" @cancel="closeModal(element)">
+                                    <span class="modal__title">{{ element.title }}</span>
+                                    <div class="modal__content">
+                                        <form @submit.prevent="updateCard(element)">
+                                            <div class="form-group">
+                                                <label>Title</label>
+                                                <input type="text" v-model="element.title" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Description</label>
+                                                <textarea v-model="element.description"></textarea>
+                                            </div>
+                                            <input type="submit" value="Update card" :disabled="loading">
+                                            <a class="delete-card" @click="deleteCard(element)">Delete Card</a>
+                                        </form>
                                     </div>
-                                    <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea v-model="card.description"></textarea>
-                                    </div>
-                                    <input type="submit" value="Update card" :disabled="loading">
-                                     <a class="delete-card" @click="deleteCard(card)">Delete Card</a>
-                                </form>
+                                </vue-final-modal>
                             </div>
-                        </vue-final-modal>
-                    </div>
+                        </template>
+                    </draggable>
                     <div :class="['column-card', 'add-card', (column.add_new_card ? '' : 'hide')]">
                         <form @submit.prevent="saveCard(column)">
-                            <textarea v-model="newCard.title" required placeholder="Enter a title for this card…"></textarea>
+                            <textarea v-model="newCard.title" required ref="newCard" placeholder="Enter a title for this card…"></textarea>
                             <div class="column-card-add-controls">
                                 <input type="submit" value="Add card" :disabled="loading">
-                                <a class="js-cancel-edit" @click="toggleAddNewCard(column)">X</a>
+                                <a class="js-cancel-edit" @click="toggleAddNewCard(column, index)">X</a>
                             </div>
                         </form>
                     </div>
                 </div>
-                <a class="column-add-card" v-if="!column.add_new_card" @click="toggleAddNewCard(column)">Add a card</a>
+                <a class="column-add-card" v-if="!column.add_new_card" @click="toggleAddNewCard(column, index)">Add a card</a>
             </div>
         </div>
         <div :class="['column', 'add-column', (addNewColumn ? '' : 'is-idle')]">
@@ -64,7 +68,12 @@
     </div>
 </template>
 <script>
+import draggable from 'vuedraggable'
+
 export default {
+    components: {
+        draggable,
+    },
     props: {
         getColumnsPath: {
             type: String,
@@ -95,6 +104,7 @@ export default {
                 title: '',
                 description: ''
             },
+            oldColumnID: null,
         }
     },
     mounted() {
@@ -228,13 +238,13 @@ export default {
             });
         },
 
-        editColumn(column) {
+        editColumn(column, index) {
             this.editAction = true;
             this.errors = [];
             this.messages = [];
 
             this.$nextTick(() => {
-                this.$refs["title-" + column.id][0].focus()
+                this.$refs.title[index].focus()
             });
         },
 
@@ -288,7 +298,7 @@ export default {
             }
         },
 
-        toggleAddNewCard (column) {
+        toggleAddNewCard (column, index) {
             this.currentList.forEach((e, idx) => {
                 if (e.add_new_card) {
                     e.add_new_card = false;
@@ -300,6 +310,10 @@ export default {
             } else {
                 column.add_new_card = true;
             }
+
+            this.$nextTick(() => {
+                this.$refs.newCard[index].focus()
+            });
         },
 
         saveCard(column) {
@@ -441,6 +455,114 @@ export default {
 
                     this.loading = false;
             });
+        },
+
+        updateOrder: function(evt) {
+            if (evt.moved) {
+                let columnIndex = this.currentList.map(function(e) {
+                    return e.id;
+                }).indexOf(evt.moved.element.column_id);
+
+                if (columnIndex !== -1) {
+                    let column = this.currentList[columnIndex];
+
+                    column.cards.forEach((card, index) => {
+                        card.order = index;
+
+                        axios.put(card.update_path, card)
+                            .catch(error => {
+                                if(error.response != undefined) {
+                                    if(error.response.data.errors != undefined) {
+                                        if(typeof error.response.data.errors == "string"){
+                                            this.errors.push(error.response.data.errors);
+                                        } else {
+                                            this.errors = error.response.data.errors;
+                                        }
+                                    }
+                                    
+                                    if(error.response.data.message != undefined) {
+                                        if(typeof error.response.data.message == "string"){
+                                            this.errors.push(error.response.data.message);
+                                        } else {
+                                            this.errors = error.response.data.message;
+                                        }
+                                    }
+                                }
+
+                            });
+                    });
+                }
+            }
+
+            if (evt.removed && this.oldColumnID) {
+                let columnIndex = this.currentList.map(function(e) {
+                    return e.id;
+                }).indexOf(this.oldColumnID);
+
+                if (columnIndex !== -1) {
+                    let column = this.currentList[columnIndex];
+
+                    column.cards.forEach((card, index) => {
+                        card.order = index;
+
+                        axios.put(card.update_path, card)
+                            .catch(error => {
+                                if(error.response != undefined) {
+                                    if(error.response.data.errors != undefined) {
+                                        if(typeof error.response.data.errors == "string"){
+                                            this.errors.push(error.response.data.errors);
+                                        } else {
+                                            this.errors = error.response.data.errors;
+                                        }
+                                    }
+                                    
+                                    if(error.response.data.message != undefined) {
+                                        if(typeof error.response.data.message == "string"){
+                                            this.errors.push(error.response.data.message);
+                                        } else {
+                                            this.errors = error.response.data.message;
+                                        }
+                                    }
+                                }
+
+                            });
+                    });
+                }
+            }
+
+            if (evt.added) {
+                let column = this.currentList.find(column => column.cards.some(item => item.id === evt.added.element.id));
+
+                column.cards.forEach((card, index) => {
+                    if (card.column_id != column.id) {
+                        this.oldColumnID = card.column_id;
+                    }
+                    card.order = index;
+                    card.column_id = column.id;
+
+                    axios.put(card.update_path, card)
+                        .catch(error => {
+                            if(error.response != undefined) {
+                                if(error.response.data.errors != undefined) {
+                                    if(typeof error.response.data.errors == "string"){
+                                        this.errors.push(error.response.data.errors);
+                                    } else {
+                                        this.errors = error.response.data.errors;
+                                    }
+                                }
+                                
+                                if(error.response.data.message != undefined) {
+                                    if(typeof error.response.data.message == "string"){
+                                        this.errors.push(error.response.data.message);
+                                    } else {
+                                        this.errors = error.response.data.message;
+                                    }
+                                }
+                            }
+
+                        });
+                });
+            }
         },
     }
 }

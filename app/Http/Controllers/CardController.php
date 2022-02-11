@@ -65,9 +65,12 @@ class CardController extends Controller
             ), 422);
         }
 
+        $maxOrder = Card::where('column_id', $request->column_id)->max('order');
+
         $card = new Card();
         $card->title = $request->title;
         $card->column_id = $request->column_id;
+        $card->order = is_null($maxOrder) ? 0 : ++$maxOrder;
         $card->save();
 
         $Column = Column::find($request->column_id);
