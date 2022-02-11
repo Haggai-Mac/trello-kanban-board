@@ -12,21 +12,36 @@ class CardController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $validator = \Validator::make($request->all(), [
+            'access_token' => 'required|string',
+            'date' => 'nullable|date:Y-m-d',
+            'status' => 'nullable|boolean',
+        ]);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if ($validator->fails() || DB::table('personal_access_tokens')->where('token', $request->access_token)->doesntExist()) { 
+            return response()->json([]);
+        }
+
+        $cards = Card::latest();
+        
+        if ($request->has('date')) {
+            $cards->whereDate('created_at', $request->date);
+        }
+
+        if ($request->has('status')) {
+            if ($request->status == 0) {
+                $cards->onlyTrashed();
+            }
+        } else {
+            $cards->withTrashed();
+        }
+
+        return response()->json($cards->get()->makeHidden(['show_modal', 'update_path', 'delete_path', 'updated_at']));
     }
 
     /**
