@@ -15,7 +15,8 @@
         "lodash": "^4.17.19",
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.49.7",
-        "sass-loader": "^12.4.0"
+        "sass-loader": "^12.4.0",
+        "vue-loader": "^16.8.3"
     },
     "dependencies": {
         "normalize.css": "^8.0.1",
