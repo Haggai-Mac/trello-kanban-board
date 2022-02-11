@@ -41,7 +41,7 @@ class CardController extends Controller
             $cards->withTrashed();
         }
 
-        return response()->json($cards->get()->makeHidden(['show_modal', 'update_path', 'delete_path', 'updated_at']));
+        return response()->json($cards->get()->makeHidden(['order', 'column_id', 'show_modal', 'update_path', 'delete_path', 'updated_at']));
     }
 
     /**
