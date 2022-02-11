@@ -16,6 +16,7 @@
         <div class="container">
             
         </div>
+        <a class="export-db" target="_blank" href="{{ route('board.export.db'); }}">Export DB</a>
     </main>
     <footer class="footer">
         <div class="footer__container">
