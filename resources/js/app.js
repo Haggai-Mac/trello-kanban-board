@@ -1,7 +1,7 @@
 require('./bootstrap');
 
-window.Vue = require('vue');
+import { createApp } from 'vue';
 
-const app = new Vue({
-    el: '#app',
-});
+const app = createApp({});
+
+app.mount('#app');
