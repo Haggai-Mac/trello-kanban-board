@@ -1,11 +1,5 @@
 <template>
     <div class="columns-wrapper">
-        <template v-if="errors.length > 0">
-            <div v-for="(error, idx) in errors" :key="idx" class="alert alert-danger">{{ error }}</div>
-        </template>
-        <template v-if="messages.length > 0">
-            <div v-for="(message, idx) in messages" :key="idx" class="alert alert-success">{{ message }}</div>
-        </template>
         <div v-for="(column, index) in currentList" :key="column.id" class="column">
             <div class="column-wrapper">
                 <div class="column-header">
@@ -65,6 +59,12 @@
                 </a>
             </form>
         </div>
+        <template v-if="errors.length > 0">
+            <div v-for="(error, idx) in errors" :key="idx" class="alert alert-danger">{{ error }}</div>
+        </template>
+        <template v-if="messages.length > 0">
+            <div v-for="(message, idx) in messages" :key="idx" class="alert alert-success">{{ message }}</div>
+        </template>
     </div>
 </template>
 <script>

@@ -436,7 +436,8 @@ body textarea {
   width: 100%;
 }
 body .alert {
-  position: relative;
+  position: fixed;
+  bottom: 75px;
   padding: 0.75rem 1.25rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
