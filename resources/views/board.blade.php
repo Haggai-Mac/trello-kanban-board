@@ -13,8 +13,12 @@
 </head>
 <body>
 	<main id='app'>
-        <div class="container">
-            
+        <div class="board">
+            <columns-list 
+                get-columns-path="{{ route('api.columns.index') }}" 
+                save-new-column-path="{{ route('api.columns.store') }}"
+                save-new-card-path="{{ route('api.cards.store') }}"
+            ></columns-list>
         </div>
         <a class="export-db" target="_blank" href="{{ route('board.export.db'); }}">Export DB</a>
     </main>
