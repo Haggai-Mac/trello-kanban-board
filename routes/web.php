@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use Spatie\DbDumper\Databases\MySql;
+use Illuminate\Support\Facades\Log;
+use Ifsnop\Mysqldump as IMysqldump;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,16 +21,17 @@ Route::get('/', function () {
 })->name('board');
 
 Route::get('export', function () {
-   MySql::create()
-        ->setDbName(config('database.connections.'.config('database.default'))['database'])
-        ->setUserName(config('database.connections.'.config('database.default'))['username'])
-        ->setPassword(config('database.connections.'.config('database.default'))['password'])
-        ->setHost(config('database.connections.'.config('database.default'))['host'])
-        ->dumpToFile('dump.sql');
+    try {
+        $dump = new IMysqldump\Mysqldump('mysql:host=' . config('database.connections.'.config('database.default'))['host'] . ';dbname=' . config('database.connections.'.config('database.default'))['database'], config('database.connections.'.config('database.default'))['username'], config('database.connections.'.config('database.default'))['password']);
+        $dump->start('storage/dump.sql');
 
-    if (Storage::disk('public')->exists('dump.sql')) {
-        return Storage::disk('public')->download('dump.sql');   
-    } else {
+        if (Storage::disk('public')->exists('dump.sql')) {
+            return Storage::disk('public')->download('dump.sql');   
+        } else {
+            return redirect()->back();
+        }
+    } catch (\Exception $e) {
+        Log::error($e);
         return redirect()->back();
     }
 })->name('board.export.db');
