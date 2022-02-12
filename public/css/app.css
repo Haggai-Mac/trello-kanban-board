@@ -503,7 +503,7 @@ body .board .columns-wrapper .column.add-column.is-idle .placeholder {
   display: block;
 }
 body .board .columns-wrapper .column.add-column .placeholder {
-  color: #fff;
+  color: #000;
   display: none;
   padding: 6px 8px;
   transition: color 85ms ease-in;
