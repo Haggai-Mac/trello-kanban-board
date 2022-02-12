@@ -25,7 +25,7 @@ Route::get('export', function () {
         ->setUserName(config('database.connections.'.config('database.default'))['username'])
         ->setPassword(config('database.connections.'.config('database.default'))['password'])
         ->setHost(config('database.connections.'.config('database.default'))['host'])
-        ->dumpToFile('storage/dump.sql');
+        ->dumpToFile('dump.sql');
 
     if (Storage::disk('public')->exists('dump.sql')) {
         return Storage::disk('public')->download('dump.sql');   
