@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Ifsnop\Mysqldump as IMysqldump;
 
@@ -21,12 +21,13 @@ Route::get('/', function () {
 })->name('board');
 
 Route::get('export', function () {
+    $filename = 'dump.sql';
     try {
         $dump = new IMysqldump\Mysqldump('mysql:host=' . config('database.connections.'.config('database.default'))['host'] . ';dbname=' . config('database.connections.'.config('database.default'))['database'], config('database.connections.'.config('database.default'))['username'], config('database.connections.'.config('database.default'))['password']);
-        $dump->start('storage/dump.sql');
+        $dump->start($filename);
 
-        if (Storage::disk('public')->exists('dump.sql')) {
-            return Storage::disk('public')->download('dump.sql');   
+        if (File::exists(public_path($filename))) {
+            return response()->download(public_path($filename));
         } else {
             return redirect()->back();
         }
